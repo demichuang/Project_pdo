@@ -24,9 +24,9 @@ class sqlcommand extends connect_db{
         $cmd="SELECT * FROM `user` 
               WHERE `username`='$user' 
               AND `userpassword`='$password'";
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-    	$num=mysqli_num_rows($result);
+    	
+    	$result=$this->db->query($cmd);
+    	$num=$result->rowCount();
     	
     	return $num;    // 回傳資料筆數
     }
@@ -35,9 +35,10 @@ class sqlcommand extends connect_db{
     function signupcheck($newuser){
         $cmd="SELECT * FROM `user` 
               WHERE `username`='$newuser'";
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-        $num=mysqli_num_rows($result);
+    	
+    	$result=$this->db->query($cmd);
+        $num=$result->rowCount();
+        $row=$result->fetch();
         
     	return [$row,$num]; // 回傳結果
     }
@@ -46,31 +47,31 @@ class sqlcommand extends connect_db{
     function adduser($newuser,$newpassword){
         $cmd="INSERT `user`(`username`,`userpassword`)  
               VALUES('$newuser','$newpassword')";       
-    	$db =new connect_db();
-    	$db->connect($cmd);
+    	
+    	$this->db->query($cmd);
     	
     	
     	$cmd1="SELECT * FROM `dst` 
     	       WHERE `d`='1'";
-    	$result1=$db->connect($cmd1);
+    	$result1=$this->db->query($cmd1);
     
     	while($row = mysqli_fetch_array($result1))
 	{
             $cmd2="INSERT `file`(`username`,`dnum`,`dname`,`additem`,`gone`)
                    VALUES('$newuser','{$row['dnum']}','{$row['dname']}','0','0')";
-            $db->connect($cmd2);
+            $this->db->query($cmd2);
 	}
 	    
 	    
 	$cmd3="SELECT * FROM `dst` 
 	       WHERE `d`='2'";
-    	$result2=$db->connect($cmd3);
+    	$result2=$this->db->query($cmd3);
     
     	while($row = mysqli_fetch_array($result2))
 	{
 	    $cmd4="INSERT `file2`(`username`,`dnum`,`dname`,`additem`,`gone`)
 	           VALUES('$newuser','{$row['dnum']}','{$row['dname']}','0','0')";
-       	    $db->connect($cmd4);
+       	    $this->db->query($cmd4);
 	 } 
 	  
     }
@@ -101,9 +102,9 @@ class sqlcommand extends connect_db{
                    WHERE `dnum` ='$id' 
                    AND `d`='2'";
  
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-    	$row =mysqli_fetch_array($result);
+    	
+    	$result=$this->db->query($cmd);
+    	$row =$result->fetchAll();
     	
     	return [$row['dname'],$row['dinfo']];  // 回傳景點名、景點資訊
     }
@@ -117,16 +118,16 @@ class sqlcommand extends connect_db{
             $cmd="SELECT * FROM `file2`
                   WHERE `username`='{$_SESSION['userName']}'";
                   
-        $db =new connect_db();
-        $result=$db->connect($cmd);
-        $num = mysqli_num_rows($result);
+        
+        $result=$this->db->query($cmd);
+        $num = $result->rowCount();
         
         $array =array();                // 放景點號碼
         $array2 =array();               // 放景點名稱
         $array3 =array();               // 放已點選add的景點名
         $array4 =array();               // 放已點選gone的景點名
       
-        while($row = mysqli_fetch_array($result))       // 將資料寫進array
+        while($row = $result->fetchAll())       // 將資料寫進array
         {
           array_push($array,$row['dnum']);
           array_push($array2,$row['dname']);
@@ -146,9 +147,9 @@ class sqlcommand extends connect_db{
                WHERE `dname`='$additem' 
                AND `username`='{$_SESSION['userName']}'";
     	
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-    	$result=$db->connect($cmd2);
+    	
+    	$result=$this->db->query($cmd);
+    	$result=$this->db->query($cmd2);
     }
     
     // gone按鈕改為已選 
@@ -160,9 +161,9 @@ class sqlcommand extends connect_db{
               WHERE `dname`='$gone' 
               AND `username`='{$_SESSION['userName']}'";
     	
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-    	$result=$db->connect($cmd2);
+    	
+    	$result=$this->db->query($cmd);
+    	$result=$this->db->query($cmd2);
     }
 
     
@@ -174,9 +175,9 @@ class sqlcommand extends connect_db{
         
         $cmd= "SELECT *FROM `dstaddress` 
                WHERE `d`='$num'";
-    	$db =new connect_db();
-    	$result=$db->connect($cmd);
-    	$row=mysqli_fetch_array($result);
+    	
+    	$result=$this->db->query($cmd);
+    	$row=$result->fetchAll();
     	
     	return $row;
     }
@@ -193,12 +194,12 @@ class sqlcommand extends connect_db{
                   AND `additem` ='1'"; 
            
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $num = mysqli_num_rows($result);
+        $result=$this->db->query($cmd);
+        $num = $result->rowCount();
         
         $array=array();                             // 放選取的景點
   
-        while($row =mysqli_fetch_array($result))    // 將選取的景點放入array
+        while($row =$result->fetchAll())    // 將選取的景點放入array
         {
          array_push($array,$row['dname']);
         }
@@ -211,8 +212,8 @@ class sqlcommand extends connect_db{
         $cmd="SELECT * FROM `user`
               WHERE `username`='{$_SESSION['userName']}'";
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $row=mysqli_fetch_array($result);
+        $result=$this->db->query($cmd);
+        $row=$result->fetchAll();
         
         if($_SESSION['ds']=="0")
             return $row['edit'];    // 回傳Taichung規劃資料
@@ -225,8 +226,8 @@ class sqlcommand extends connect_db{
         $cmd="SELECT * FROM `user` 
               WHERE `username`='{$_SESSION['userName']}'";
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $row=mysqli_fetch_array($result);
+        $result=$this->db->query($cmd);
+        $row=$result->fetchAll();
         
         if($_SESSION['ds']=="0")
             $edit = ereg_replace("<br />", "", $row['edit']);
@@ -246,7 +247,7 @@ class sqlcommand extends connect_db{
                   WHERE `username`='{$_SESSION['userName']}'";
                   
         $db=new connect_db();
-        $db->connect($cmd);
+        $this->db->query($cmd);
     }
 
     // 取消景點選取
@@ -259,8 +260,8 @@ class sqlcommand extends connect_db{
                AND `username`='{$_SESSION['userName']}'";
                
         $db=new connect_db();
-        $db->connect($cmd);
-        $db->connect($cmd2);
+        $this->db->query($cmd);
+        $this->db->query($cmd2);
     }
 
 
@@ -275,9 +276,9 @@ class sqlcommand extends connect_db{
                AND `gone`='1'";
 
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $result2=$db->connect($cmd2);
-        $row = mysqli_num_rows($result);
+        $result=$this->db->query($cmd);
+        $result2=$this->db->query($cmd2);
+        $row = $result->rowCount();
         $gone = mysqli_num_rows($result2);
         
         $gonenumber = round(($gone/$row)*100,2);
@@ -300,9 +301,9 @@ class sqlcommand extends connect_db{
                AND `gone`='1'";
         
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $result2=$db->connect($cmd2);
-        $row=mysqli_num_rows($result);
+        $result=$this->db->query($cmd);
+        $result2=$this->db->query($cmd2);
+        $row=$result->rowCount();
         $gone = mysqli_num_rows($result2);
         
         $gonenumber = round(($gone/$row)*100,2);
@@ -326,8 +327,8 @@ class sqlcommand extends connect_db{
                AND `username`='{$_SESSION['userName']}'";
                
         $db=new connect_db();
-        $db->connect($cmd);
-        $db->connect($cmd2);
+        $this->db->query($cmd);
+        $this->db->query($cmd2);
     }
     
     
@@ -338,7 +339,7 @@ class sqlcommand extends connect_db{
         $cmd="INSERT `talk` (`name`,`word`,`time`)
               VALUES ( '$name', '$word', '$now')";  
         $db=new connect_db();
-        $db->connect($cmd); 
+        $this->db->query($cmd); 
     }    
     
     // 顯示留言
@@ -346,14 +347,14 @@ class sqlcommand extends connect_db{
         $cmd="SELECT * FROM `talk` 
               ORDER BY num DESC";   
         $db=new connect_db();
-        $result=$db->connect($cmd);
-        $numwords = mysqli_num_rows($result);
+        $result=$this->db->query($cmd);
+        $numwords = $result->rowCount();
         
         $array =array();            // 放留言者名稱
         $array2=array();            // 放留言時間
         $array3=array();            // 放留言內容
     
-        while($row=mysqli_fetch_array($result))           // 留言紀錄寫進array
+        while($row=$result->fetchAll())           // 留言紀錄寫進array
         {
             array_push($array,$row['name']);
             array_push($array2,$row['time']);
