@@ -284,7 +284,7 @@ class sqlcommand extends connect_db{
         $gonenumber = round(($gone/$row)*100,2);
         
         $array =array();                            // 放Taichung景點名稱
-        while($row2=$result2>fetchAll())   // Taichung景點寫進array      
+        while($row2=$result2->fetchAll())   // Taichung景點寫進array      
         {
             array_push($array,$row2['dname']);
         }
