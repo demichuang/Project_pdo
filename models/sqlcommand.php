@@ -9,7 +9,7 @@ class sqlcommand extends connect_db{
         else
             $sUserName = "Guest";               
 
-        return $sUserName;              // 回傳$sUserName 
+        return $sUserName;                   // 回傳$sUserName 
     }
     
     // 定義$_SESSION["userName"] 
