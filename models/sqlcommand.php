@@ -55,7 +55,7 @@ class sqlcommand extends connect_db{
     	       WHERE `d`='1'";
     	$result1=$this->db->query($cmd1);
     
-    	while($row = mysqli_fetch_array($result1))
+    	while($row = $result1->fetchAll())
 	{
             $cmd2="INSERT `file`(`username`,`dnum`,`dname`,`additem`,`gone`)
                    VALUES('$newuser','{$row['dnum']}','{$row['dname']}','0','0')";
@@ -67,7 +67,7 @@ class sqlcommand extends connect_db{
 	       WHERE `d`='2'";
     	$result2=$this->db->query($cmd3);
     
-    	while($row = mysqli_fetch_array($result2))
+    	while($row = $result2->fetchAll())
 	{
 	    $cmd4="INSERT `file2`(`username`,`dnum`,`dname`,`additem`,`gone`)
 	           VALUES('$newuser','{$row['dnum']}','{$row['dname']}','0','0')";
@@ -279,12 +279,12 @@ class sqlcommand extends connect_db{
         $result=$this->db->query($cmd);
         $result2=$this->db->query($cmd2);
         $row = $result->rowCount();
-        $gone = mysqli_num_rows($result2);
+        $gone = $result2->rowCount();
         
         $gonenumber = round(($gone/$row)*100,2);
         
         $array =array();                            // 放Taichung景點名稱
-        while($row2=mysqli_fetch_array($result2))   // Taichung景點寫進array      
+        while($row2=$result2>fetchAll())   // Taichung景點寫進array      
         {
             array_push($array,$row2['dname']);
         }
@@ -304,12 +304,12 @@ class sqlcommand extends connect_db{
         $result=$this->db->query($cmd);
         $result2=$this->db->query($cmd2);
         $row=$result->rowCount();
-        $gone = mysqli_num_rows($result2);
+        $gone = $result2->rowCount();
         
         $gonenumber = round(($gone/$row)*100,2);
         
         $array =array();                            // 放Tainan景點名稱
-        while($row2=mysqli_fetch_array($result2))   // Tainan景點寫進array      
+        while($row2=$result2->fetchAll())   // Tainan景點寫進array      
         {
             array_push($array,$row2['dname']);
         }
